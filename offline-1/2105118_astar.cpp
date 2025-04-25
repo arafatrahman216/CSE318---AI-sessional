@@ -1,7 +1,9 @@
 #include<iostream>
 #include<vector>
 #include<queue>
+#include<map>
 #include<cmath>
+#include<algorithm>
 
 using namespace std;
 
@@ -119,15 +121,18 @@ public:
 };
 
 struct ComparePriority {
-    bool operator()( Node& a, Node& b) const {
+    bool operator()( Node* a, Node* b) const {
         // if a's priority value is less than b's, return true
         // this will make the priority queue a max-heap
         // so that the node with the lowest priority value is at the top
-        return a.getPriorityValue() > b.getPriorityValue();
+        return a->getPriorityValue() > b->getPriorityValue();
     }
 };
 
-priority_queue<Node, vector<Node>, ComparePriority> pq;
+priority_queue<Node *, vector<Node*>, ComparePriority> pq;
+vector<Node *> path; // to store the path from start to goal node
+vector <Node *> allNodes; // to store all nodes for debugging
+
 
 
 float findHammingDistance(Grid g){
@@ -258,34 +263,59 @@ bool isSolvable(Grid g){
 }
 
 void aStarSearch(Grid &startGrid, float (*heuristicFunction)(Grid) = findManhattanDistance){
-    pq.push(Node(0, 0, nullptr, startGrid));
+    Node * startNode = new Node(0, 0, nullptr, startGrid); 
+    allNodes.push_back(startNode); 
+    pq.push(startNode); 
     exploredNodes++;
     if (!isSolvable(startGrid)){
         cout << "Unsolvable puzzle" << endl;
         return;
     }
+    map <pair<int,int>, bool> visited;
+    visited[startGrid.getBlankPosition()] = true;
+
     startGrid.getBlankPosition(); // set the blank position and returns it
     while (!pq.empty()){
-        Node currentNode = pq.top();
+        Node* currentNode = pq.top();
         pq.pop();
         expandedNodes++; 
-        Grid currentGrid = currentNode.getGrid();
-        cout<< "Parent Node: " << currentNode.getParent() << endl;
-        currentGrid.printBoard();
-        if (currentGrid.getBlankPosition() == pair<int,int>{n-1,n-1}){ // goal state
+        Grid currentGrid = currentNode->getGrid();
+        cout<< "Parent Node: " << currentNode->getParent() << endl;
+        // currentGrid.printBoard();
+        if (currentGrid.getBlankPosition() == pair<int,int>{n-1,n-1}){ 
+            while (currentNode != nullptr){
+                path.push_back(currentNode);
+                currentNode = currentNode->getParent();
+            }
+            cout << "Path to goal state: " << endl;
+            reverse(path.begin(), path.end());
+            for ( auto node : path){
+                node->getGrid().printBoard();
+                cout << "Moves: " << node->getMoves() << endl;
+            }
+            cout << "Total Nodes Expanded: " << expandedNodes << endl;
+            cout << "Total Nodes Explored: " << exploredNodes << endl;
+            cout << "Total Nodes in Memory: " << allNodes.size() << endl;
+            for (auto node : allNodes){
+                delete node; // free memory
+            }
             cout << "Goal State Reached!" << endl;
             return;
         }
 
         vector<Grid> validMoves = currentGrid.generateValidMoves();
         for (auto move : validMoves){
+            if (visited[move.getBlankPosition()]) continue; 
             float heuristic_Hn = findManhattanDistance(move);
-            float moves_Gn = currentNode.getMoves() + 1; // g(n)
+            float moves_Gn = currentNode->getMoves() + 1; // g(n)
             float priorityValue = moves_Gn + heuristic_Hn; // f(n) = g(n) + h(n)
-            pq.push( Node(priorityValue, moves_Gn, &currentNode, move));
+            Node* newNode = new Node(priorityValue, moves_Gn, currentNode, move); 
+            pq.push(newNode); 
+            allNodes.push_back(newNode); 
+            visited[move.getBlankPosition()] = true;
             exploredNodes++;
-
         }
+
         cout << "----------------------------------------" << endl;
     }
 }
