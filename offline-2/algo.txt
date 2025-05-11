@@ -1,0 +1,29 @@
+procedure SemiGreedyMaxCut(Graph G = (V,E), weight w, α in [0,1])
+    Initialize partitions: X ← ∅, Y ← ∅
+
+    1. Find edge (u, v) with maximum weight
+       Put u in X, v in Y
+
+    2. U ← V \ {u, v}  # Unassigned vertices
+
+    3. While U is not empty:
+        a. For each vertex z in U:
+            - Compute σX(z) = sum of weights from z to all nodes in X
+            - Compute σY(z) = sum of weights from z to all nodes in Y
+            - greedy_value(z) = max(σX(z), σY(z))
+
+        b. Find wmin = min of all greedy values
+           Find wmax = max of all greedy values
+
+        c. Compute threshold μ = wmin + α * (wmax - wmin)
+
+        d. Build Restricted Candidate List (RCL):
+            RCL ← { z in U | greedy_value(z) ≥ μ }
+
+        e. Randomly pick a vertex r from RCL
+
+        f. Assign r to the partition where it contributes most (X or Y)
+
+        g. Remove r from U
+
+    4. Return (X, Y)
