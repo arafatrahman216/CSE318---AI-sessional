@@ -166,9 +166,7 @@ pair<int, pair<unordered_set<int>, unordered_set<int>>> randomizedMaxCut(Graph& 
         }
     }
 
-    int avgcut = static_cast<int>(bestCut) / iterations; 
-
-    return {avgcut, {bestX, bestY}};
+    return {bestCut, {bestX, bestY}};
 }
 
 pair<int, pair<unordered_set<int>, unordered_set<int>>> localSearch(Graph& graph, unordered_set<int> X, unordered_set<int> Y) {

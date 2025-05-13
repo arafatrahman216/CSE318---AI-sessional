@@ -343,7 +343,7 @@ void writeResultsToCSV(const string& filename, const vector<vector<string>>& res
     }
     
     // Header
-    file << "Problem,|V|,|E|,Randomized,Greedy,Semi-Greedy (α=0.5),Local Search (Greedy),GRASP (α=0.5 & iter=100),Known Best Solution" << endl;
+    file << "Problem,|V|,|E|,Randomized-1,Greedy-1,Semi-Greedy-1,Local-1,GRASP-1,Known Best Solution" << endl;
     
     // Data
     for (const auto& row : results) {
@@ -398,4 +398,81 @@ int main() {
     writeResultsToCSV("2105118.csv", results);
     
     return 0;
+}
+
+
+
+pair<int, pair<unordered_set<int>, unordered_set<int>>> semiGreedyMaxCut(Graph& graph, double alpha= 0.5) {
+    unordered_set<int> X, Y;
+    Edge maxEdge = graph.getMaxEdge();
+    pair<int, int> maxEdgePair = {maxEdge.u, maxEdge.v};
+    int maxWeight = maxEdge.w;
+    if (maxWeight == INT32_MIN) return {0, {X, Y}}; 
+    X.insert(maxEdgePair.first);  Y.insert(maxEdgePair.second);
+    vector<int> U(graph.n);  iota(U.begin(), U.end(), 1);
+    unordered_set<int> Uset(U.begin(), U.end());
+    
+    Uset.erase(maxEdgePair.first);
+    Uset.erase(maxEdgePair.second);
+    
+    // Assign remaining vertices
+    while (!Uset.empty()) {
+        cout << "Semi-Greedy algorithm started..." << Uset.size() << endl;
+        
+        // vector<int> sigmaXs (graph.n + 1, 0);
+        // vector<int> sigmaYs (graph.n + 1, 0);
+        // vector<int> greedyValue (graph.n + 1, 0);
+        vector <pair<int, int> > greedyValue ; // (value, vertex)
+        
+
+        cout << "Calculating gains for unassigned vertices..." << endl;
+
+        int maxGain = INT32_MIN;
+        int minGain = INT32_MAX;
+
+        for (int v : Uset) {
+            int sigmaX = calculateSigma(v, X, graph);
+            int sigmaY = calculateSigma(v, Y, graph);
+            // sigmaXs[v] = sigmaX;
+            // sigmaYs[v] = sigmaY;
+            // greedyValue[v] = max (sigmaX, sigmaY);
+            greedyValue.push_back({max(sigmaX, sigmaY), v});
+            maxGain = max(maxGain, max(sigmaX, sigmaY));
+            minGain = min(minGain, min(sigmaX, sigmaY));
+        }
+
+        int threshold_Mu = minGain + alpha * (maxGain - minGain);
+
+
+        vector <pair<int, int>> RCL;
+        //RCL ← { z in U | greedy_value(z) ≥ μ }
+        for (const auto& [value, v] : greedyValue) {
+            // if (greedyValue[v] >= threshold_Mu) {
+            if (value >= threshold_Mu) {
+                // int partition = ( Sigmas[v].second.first > Sigmas[v].second.second) ? 0 : 1; // 0 for X, 1 for Y
+                int partition = (value == maxGain) ? 0 : 1; // 0 for X, 1 for Y
+                RCL.push_back({v, partition}); 
+                
+            }
+        }
+        random_device rd;
+        mt19937 rng(rd());
+        cout<< "rcl size "<< RCL.size()<<endl;
+        uniform_int_distribution<int> dist(0, RCL.size() - 1);
+        auto selected = RCL[dist(rng)];
+        int r = selected.first; 
+        int partition = selected.second;
+        //Assign r to the partition where it contributes most (X or Y)
+        if (greedyValue[r].first > 0) {
+            X.insert(r);
+        } else {
+            Y.insert(r);
+        }
+        Uset.erase(r);
+
+        // Calculate gains for all unassigned vertices
+    }
+
+    int cutWeight = calculateCutWeight(X, Y, graph);
+    return {cutWeight, {X, Y}};
 }

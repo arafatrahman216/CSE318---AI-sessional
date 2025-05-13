@@ -6,6 +6,8 @@ import numpy as np
 data = pd.read_csv('2105118.csv')  # Replace with your actual filename
 print(data.head())  # Display the first few rows of the dataframe
 
+data= data.head(10)
+
 # Extract the relevant columns for plotting
 graph_names = data['Name']
 # Update the algorithm names to match the actual column names in the CSV file
@@ -40,3 +42,5 @@ plt.tight_layout()
 
 # Show the plot
 plt.show()
+
+plt.savefig('max_cut_comparison.png', bbox_inches='tight')
