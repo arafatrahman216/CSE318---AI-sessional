@@ -1,0 +1,8 @@
+# Ignore Python virtual environment in offline 3 backend
+offline-3/backend/venv/
+offline-3/backend/.env
+
+# Ignore .env file in frontend
+offline-3/frontend/.env
+
+offline-3/frontend/node_modules/
