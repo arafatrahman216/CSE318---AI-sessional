@@ -18,61 +18,57 @@ def evaluate(board, name = "orb_diff", blue= True):
     
     # print(name)
     if name == "orb_diff":
-        # print("orb diff")
-        # print(blue)
         return orb_diff(board,blue)
     if name == "cell_diff":
-        # print("cell diff")
         return cell_diff(board, blue)
     if name == "critical_cells":
-        # print("critical cells")
-        own = 0
-        opponent = 0
+        redN = 0
+        blueN = 0
         for i in range(dimension.ROWS):
             for j in range(dimension.COLS):
                 if board[i][j].endswith('R'):
-                    own += criticalCells(board, (i, j))
+                    redN += criticalCells(board, (i, j))
                 elif board[i][j].endswith('B'):
-                    opponent += criticalCells(board, (i, j))
+                    blueN += criticalCells(board, (i, j))
         if blue:
-            return own - opponent
-        return opponent - own
+            return redN - blueN
+        return blueN - redN
     if name == "adjacent_cells":
-        own = 0
-        opponent = 0
+        redN = 0
+        blueN = 0
         for i in range(dimension.ROWS):
             for j in range(dimension.COLS):
                 if board[i][j].endswith('R'):
-                    own += adjCells(board, (i, j))
+                    redN += adjCells(board, (i, j))
                 elif board[i][j].endswith('B'):
-                    opponent += adjCells(board, (i, j))
+                    blueN += adjCells(board, (i, j))
         if blue:
-            return own - opponent
-        return opponent - own
+            return redN - blueN
+        return blueN - redN
     if name == "own_support": 
-        own = 0
-        opponent = 0
+        redN = 0
+        blueN = 0
         for i in range(dimension.ROWS):
             for j in range(dimension.COLS):
                 if board[i][j].endswith('R'):
-                    own += ownSupport(board, (i, j))
+                    redN += ownSupport(board, (i, j))
                 elif board[i][j].endswith('B'):
-                    opponent += ownSupport(board, (i, j))
+                    blueN += ownSupport(board, (i, j))
         if blue:
-            return own - opponent
-        return opponent - own
+            return redN - blueN
+        return blueN - redN
     if name == "opponent_support":
-        own = 0
-        opponent = 0
+        redN = 0
+        blueN = 0
         for i in range(dimension.ROWS):
             for j in range(dimension.COLS):
                 if board[i][j].endswith('R'):
-                    own += opponentSupport(board, (i, j))
+                    redN += opponentSupport(board, (i, j))
                 elif board[i][j].endswith('B'):
-                    opponent += opponentSupport(board, (i, j))
+                    blueN += opponentSupport(board, (i, j))
         if blue:
-            return own - opponent
-        return opponent - own
+            return redN - blueN  # should not choose where opponent is maximum
+        return blueN - redN
     return 0
 
 

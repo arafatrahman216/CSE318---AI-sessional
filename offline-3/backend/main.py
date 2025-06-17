@@ -1,11 +1,10 @@
-# backend/main.py
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from Dim import dimension
 
 from helper import criticalCells, adjCells, ownSupport, opponentSupport,critical_mass, orb_diff, cell_diff 
-from moves import get_legal_moves, apply_move, out_of_bounds, explode_cell, gameover
+from moves import get_legal_moves, apply_move, out_of_bounds, explode_cell, gameover, random_move
 from files import read_board, write_board, initialize_board
 from minimax import minimax
 
@@ -153,3 +152,17 @@ def resetBoard():
     board = initialize_board()
     write_board("Start",board)
     return board
+
+# random move agent(Red AI) -> 1st move
+@app.get("/randomMove") 
+def randomMoveAgent():
+    _,board = read_board()
+    new_board, move = random_move(board,'R')
+    if move:
+        write_board("Human Move:", new_board)
+    else:
+        raise HTTPException(status_code=400, detail="No valid moves available for Random Agent")
+    print("Random Move:")
+    over, winner = gameover(new_board)
+    print("winner:", winner)
+    return {"status": "Random move made", "move": move, "game_over": over, "winner": winner}

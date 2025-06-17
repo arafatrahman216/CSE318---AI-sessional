@@ -1,4 +1,3 @@
-// pages/HumanVsAI.jsx
 import React, { useState, useEffect } from 'react';
 import GameBoard from '../components/GameBoard';
 import axios from 'axios';

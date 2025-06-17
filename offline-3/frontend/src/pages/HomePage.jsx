@@ -1,4 +1,3 @@
-// pages/HomePage.jsx
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Stack, TextField, Fade, Paper, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -40,7 +39,7 @@ export default function HomePage() {
   const handleSetHeuristic = async (number, name) => {
   try {
     await axios.post(`${serverLink}/setHeuristic`, {
-      row: number,
+      row: number, // 1-> blue, 2-> red
       col : 1,
       player: name
     });
@@ -103,6 +102,7 @@ export default function HomePage() {
                 <MenuItem value={'cell_diff'}>Cell Difference</MenuItem>
                 <MenuItem value={'critical_cells'}>Critical Cells</MenuItem>
                 <MenuItem value={'adjacent_cells'}>Adjacent Cells</MenuItem>
+                <MenuItem value={'own_support'}>Own Support</MenuItem>
                 <MenuItem value={'opponent_support'}>Opponent Support</MenuItem>
                 <MenuItem value={'test'}>Zero</MenuItem>
                 
@@ -120,6 +120,7 @@ export default function HomePage() {
                 <MenuItem value={'cell_diff'}>Cell Difference</MenuItem>
                 <MenuItem value={'critical_cells'}>Critical Cells</MenuItem>
                 <MenuItem value={'adjacent_cells'}>Adjacent Cells</MenuItem>
+                <MenuItem value={'own_support'}>Own Support</MenuItem>
                 <MenuItem value={'opponent_support'}>Opponent Support</MenuItem>
                 <MenuItem value={'test'}>Zero</MenuItem>
               </Select>
@@ -144,8 +145,11 @@ export default function HomePage() {
             <Button variant="contained" size="large" fullWidth color="secondary" onClick={() => handleStart('/human-vs-ai')}>
               Human vs AI
             </Button>
-            <Button variant="outlined" size="large" fullWidth color="error" onClick={() => handleStart('/ai-vs-ai')}>
+            <Button variant="contained" size="large" fullWidth color="error" onClick={() => handleStart('/ai-vs-ai')}>
               AI vs AI
+            </Button>
+            <Button variant="contained" size="large" fullWidth color="warning" onClick={() => handleStart('/random-vs-ai')}>
+              Random vs AI
             </Button>
           </Stack>
         </Paper>

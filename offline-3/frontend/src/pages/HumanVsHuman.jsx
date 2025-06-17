@@ -1,4 +1,3 @@
-// pages/HumanVsHuman.jsx
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import GameBoard from '../components/GameBoard';
